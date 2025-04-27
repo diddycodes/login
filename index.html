@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Galaxy Auth System 🚀</title>
+
+  <style>
+    /* GALAXY BACKGROUND */
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      color: white;
+    }
+
+    .stars, .stars2, .stars3 {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: transparent url('https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/media/stars.png') repeat top center;
+      z-index: 0;
+      animation: moveStars 200s linear infinite;
+    }
+
+    .stars2 {
+      background-size: contain;
+      opacity: 0.5;
+      animation: moveStars 400s linear infinite;
+    }
+
+    .stars3 {
+      background-size: contain;
+      opacity: 0.2;
+      animation: moveStars 800s linear infinite;
+    }
+
+    @keyframes moveStars {
+      0% {background-position: 0 0;}
+      100% {background-position: 10000px 5000px;}
+    }
+
+    /* Neon Glow Forms */
+    .container {
+      z-index: 2;
+      position: relative;
+      width: 400px;
+      margin: 5% auto;
+      padding: 30px;
+      background: rgba(0,0,0,0.6);
+      box-shadow: 0 0 20px #00f0ff;
+      border-radius: 15px;
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.8);}
+      to { opacity: 1; transform: scale(1);}
+    }
+
+    input[type="email"], input[type="password"], input[type="text"] {
+      width: 90%;
+      padding: 12px;
+      margin: 10px 0;
+      background: transparent;
+      border: 2px solid #00f0ff;
+      color: #00f0ff;
+      font-size: 16px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      background: #00f0ff;
+      color: #000;
+      border-radius: 30px;
+      margin-top: 10px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    button:hover {
+      background: #0ff;
+      transform: scale(1.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #00f0ff;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+
+    #theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #00f0ff;
+      color: #000;
+      border-radius: 30px;
+      padding: 10px 15px;
+      cursor: pointer;
+      z-index: 3;
+    }
+  </style>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
+
+  <!-- Firebase Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuHMu5uazcE8HiCldejgx_IbpqUCDJRUE",
+      authDomain: "diddy-cd988.firebaseapp.com",
+      projectId: "diddy-cd988",
+      storageBucket: "diddy-cd988.firebasestorage.app",
+      messagingSenderId: "141443702492",
+      appId: "1:141443702492:web:7f7a5628c3a3ce99c69e19",
+      measurementId: "G-WD29M6C00C"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const analytics = getAnalytics(app);
+
+    (function(){
+      emailjs.init("VyajT5n0ZvRSdS-_b");
+    })();
+
+    window.db = db;
+  </script>
+</head>
+
+<body>
+
+<!-- MOVING GALAXY BACKGROUND -->
+<div class="stars"></div>
+<div class="stars2"></div>
+<div class="stars3"></div>
+
+<!-- THEME TOGGLE -->
+<div id="theme-toggle">Toggle 🌗</div>
+
+<!-- AUTH CONTAINER -->
+<div class="container" id="container">
+  <h2 id="formTitle">Login</h2>
+  
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required>
+    <input type="password" id="loginPassword" placeholder="Password" required>
+    <button type="submit">Login 🚀</button>
+    <p>Don't have an account? <a href="#" onclick="switchForm('signup')">Sign up</a></p>
+  </form>
+
+  <form id="signupForm" class="hidden">
+    <input type="email" id="signupEmail" placeholder="Email" required>
+    <input type="password" id="signupPassword" placeholder="Password" required>
+    <input type="text" id="signupName" placeholder="Name" required>
+    <button type="submit">Sign Up ✨</button>
+    <p>Already have an account? <a href="#" onclick="switchForm('login')">Login</a></p>
+  </form>
+
+  <div id="loader" class="spinner hidden"></div>
+</div>
+
+<script type="module">
+  import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const loader = document.getElementById('loader');
+  const formTitle = document.getElementById('formTitle');
+  const themeToggle = document.getElementById('theme-toggle');
+
+  function switchForm(type) {
+    if (type === 'signup') {
+      loginForm.classList.add('hidden');
+      signupForm.classList.remove('hidden');
+      formTitle.innerText = "Sign Up";
+    } else {
+      signupForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+      formTitle.innerText = "Login";
+    }
+  }
+
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+  });
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loader.classList.remove('hidden');
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const name = document.getElementById('signupName').value;
+
+    try {
+      await setDoc(doc(window.db, "users", email), {
+        email,
+        password,
+        name
+      });
+      
+      await emailjs.send("service_g4pwqht", "template_iokthvd", {
+        to_email: email,
+        name: name
+      });
+
+      alert('Signup successful! Email sent!');
+      switchForm('login');
+    } catch (err) {
+      console.error(err);
+      alert('Signup failed.');
+    } finally {
+      loader.classList.add('hidden');
+    }
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loader.classList.remove('hidden');
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const userDoc = await getDoc(doc(window.db, "users", email));
+      if (!userDoc.exists()) {
+        alert('No user found!');
+        return;
+      }
+
+      const userData = userDoc.data();
+      if (userData.password === password) {
+        const code = Math.floor(100000 + Math.random() * 900000);
+        
+        await emailjs.send("service_g4pwqht", "template_iokthvd", {
+          to_email: email,
+          verification_code: code
+        });
+
+        alert('Login successful! Verification code sent.');
+        // Here you can redirect to dashboard or show code input
+      } else {
+        alert('Wrong password!');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Login failed.');
+    } finally {
+      loader.classList.add('hidden');
+    }
+  });
+</script>
+
+</body>
+</html>
